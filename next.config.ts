@@ -1,7 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  output: 'export',
+  // For Capacitor/Android APK builds, uncomment the next line:
+  // output: 'export',
 };
 
 export default nextConfig;
