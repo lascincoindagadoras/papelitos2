@@ -1,36 +1,66 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 📝 Papelitos - Tareas Divertidas en Familia
 
-## Getting Started
+App para organizar las tareas domésticas de forma divertida. Los padres gestionan tareas y recompensas, los niños reciben papelitos impresos con códigos QR.
 
-First, run the development server:
+## Stack Tecnológico
+
+- **Frontend**: Next.js 16 + React 19 + Tailwind CSS 4
+- **Backend**: Supabase (PostgreSQL + Auth + RLS)
+- **Despliegue Web**: Vercel
+- **App Android**: Capacitor
+
+## Desarrollo Local
 
 ```bash
+cd papelitos
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+La app estará en `http://localhost:3000`
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Variables de Entorno
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Crear `.env.local`:
+```
+NEXT_PUBLIC_SUPABASE_URL=tu_url_supabase
+NEXT_PUBLIC_SUPABASE_ANON_KEY=tu_anon_key
+```
 
-## Learn More
+## Despliegue en Vercel
 
-To learn more about Next.js, take a look at the following resources:
+1. Hacer push a GitHub: `git push origin main`
+2. Conectar el repo en [vercel.com](https://vercel.com)
+3. Configurar las variables de entorno `NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+4. Desplegar
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Generar APK Android
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+npm run android:add      # Solo la primera vez
+npm run android:build    # Build + sync
+npm run android:open     # Abrir en Android Studio
+```
 
-## Deploy on Vercel
+Desde Android Studio: Build > Build Bundle(s) / APK(s) > Build APK
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Pantallas
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. **Login** - Iniciar sesión o crear cuenta con email
+2. **Menú** - 7 opciones principales
+3. **Gestionar Usuarios** - CRUD de niños/usuarios
+4. **Gestionar Tareas** - CRUD con filtros, toggle on/off
+5. **Crear/Editar Tarea** - Formulario completo
+6. **Gestionar Recompensas** - CRUD con filtros, toggle on/off
+7. **Crear/Editar Recompensa** - Personal o común
+8. **Gestión Papelitos** - Ver papelitos generados, reimprimir
+9. **Escanear QR** - Escanear papelitos completados
+10. **Configuración** - Impresora Bluetooth + horarios
+
+## Lógica de Negocio
+
+- **Inicio de Día**: Genera papelitos según definiciones de tareas activas y su frecuencia
+- **Escaneo**: Marca tareas como hechas y verifica si se consiguen recompensas
+- **Puntos KO**: Siempre negativos (se guardan en negativo)
+- **Recompensas comunes**: Suman puntos de todos los usuarios
+- **Recompensas personales**: Solo puntos del usuario asignado
