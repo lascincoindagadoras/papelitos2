@@ -16,13 +16,14 @@ export default function InfoCarousel({ onFinish }: Props) {
       .from('tarjeta_informacion')
       .select('*')
       .order('posicion', { ascending: true })
-      .then(({ data, error }) => {
-        if (error || !data || data.length === 0) {
-          onFinish();
-        } else {
+      .then(({ data }) => {
+        if (data && data.length > 0) {
           setTarjetas(data);
+        } else {
+          onFinish();
         }
-      });
+      })
+      .catch(() => onFinish());
   }, []);  // eslint-disable-line react-hooks/exhaustive-deps
 
   if (tarjetas.length === 0) return null;

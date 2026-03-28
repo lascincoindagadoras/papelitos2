@@ -259,6 +259,7 @@ async function main() {
     await client.query(SQL);
     console.log('All tables, policies, triggers created successfully!');
     
+    // Verify
     const res = await client.query(`
       SELECT table_name FROM information_schema.tables 
       WHERE table_schema = 'public' 
