@@ -45,10 +45,16 @@ export default function UsuariosPage() {
       edad: edad ? parseInt(edad) : null,
     };
 
+    let result;
     if (editingId) {
-      await supabase.from('usuarios').update(payload).eq('id', editingId);
+      result = await supabase.from('usuarios').update(payload).eq('id', editingId);
     } else {
-      await supabase.from('usuarios').insert(payload);
+      result = await supabase.from('usuarios').insert(payload);
+    }
+
+    if (result.error) {
+      setError('Error al guardar: ' + result.error.message);
+      return;
     }
 
     resetForm();

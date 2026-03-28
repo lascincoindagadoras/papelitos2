@@ -26,7 +26,7 @@ export default function ConfiguracionPage() {
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) { router.replace('/'); return; }
 
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('ajustes')
       .select('*')
       .eq('casa_id', session.user.id)
@@ -37,6 +37,8 @@ export default function ConfiguracionPage() {
       setNombreImpresora(data.nombre_impresora || '');
       setHoraManana(data.hora_manana || '08:00');
       setHoraTarde(data.hora_tarde || '16:00');
+    } else if (error && error.code !== 'PGRST116') {
+      setMensaje('⚠️ Error cargando ajustes: ' + error.message);
     }
     setLoading(false);
   };
@@ -48,12 +50,12 @@ export default function ConfiguracionPage() {
     setSaving(true);
     const { error } = await supabase
       .from('ajustes')
-      .update({
+      .upsert({
+        casa_id: session.user.id,
         nombre_impresora: nombreImpresora || null,
         hora_manana: horaManana,
         hora_tarde: horaTarde,
-      })
-      .eq('casa_id', session.user.id);
+      }, { onConflict: 'casa_id' });
 
     setSaving(false);
     if (error) {
@@ -66,9 +68,18 @@ export default function ConfiguracionPage() {
 
   const handleBuscarBluetooth = async () => {
     // Web Bluetooth API - funciona en Chrome y Edge
-    const nav = navigator as Navigator & { bluetooth?: { requestDevice: (options: { acceptAllDevices: boolean; optionalServices: string[] }) => Promise<{ name?: string; id: string }> } };
+    const nav = navigator as Navigator & {
+      bluetooth?: {
+        requestDevice: (options: {
+          acceptAllDevices?: boolean;
+          filters?: Array<{ services?: string[]; name?: string; namePrefix?: string }>;
+          optionalServices?: string[];
+        }) => Promise<{ name?: string; id: string }>;
+        getDevices?: () => Promise<Array<{ name?: string; id: string }>>;
+      };
+    };
     if (!nav.bluetooth) {
-      setMensaje('⚠️ Bluetooth no disponible en este navegador. Usa Chrome o la app Android.');
+      setMensaje('⚠️ Bluetooth no disponible en este navegador. Usa Chrome/Edge o la app Android.');
       setBluetoothStatus('error');
       return;
     }
@@ -77,24 +88,47 @@ export default function ConfiguracionPage() {
     setDispositivosBT([]);
 
     try {
+      // Try to get already-paired devices first
+      if (nav.bluetooth.getDevices) {
+        try {
+          const pairedDevices = await nav.bluetooth.getDevices();
+          if (pairedDevices.length > 0) {
+            const devices = pairedDevices.map(d => ({
+              name: d.name || 'Dispositivo sin nombre',
+              id: d.id,
+            }));
+            setDispositivosBT(devices);
+          }
+        } catch {
+          // getDevices may not be supported, continue to requestDevice
+        }
+      }
+
+      // Open browser device picker (shows all discoverable BLE devices)
       const device = await nav.bluetooth.requestDevice({
         acceptAllDevices: true,
-        optionalServices: ['generic_access'],
+        optionalServices: [
+          'generic_access',
+          '000018f0-0000-1000-8000-00805f9b34fb', // Common thermal printer service
+        ],
       });
 
       if (device) {
-        setDispositivosBT([{ name: device.name || 'Dispositivo', id: device.id }]);
+        setDispositivosBT(prev => {
+          const exists = prev.some(d => d.id === device.id);
+          return exists ? prev : [...prev, { name: device.name || 'Dispositivo', id: device.id }];
+        });
         setNombreImpresora(device.name || device.id);
         setBluetoothStatus('connected');
-        setMensaje(`✅ Impresora conectada: ${device.name || device.id}`);
+        setMensaje(`✅ Dispositivo seleccionado: ${device.name || device.id}`);
       }
     } catch (err: unknown) {
       const errorMsg = err instanceof Error ? err.message : 'Error desconocido';
-      if (errorMsg.includes('cancelled')) {
+      if (errorMsg.includes('cancelled') || errorMsg.includes('canceled')) {
         setBluetoothStatus('idle');
       } else {
         setBluetoothStatus('error');
-        setMensaje('❌ Error Bluetooth: ' + errorMsg);
+        setMensaje('❌ Error Bluetooth: ' + errorMsg + '. Si no ves tu impresora, puede que use Bluetooth clásico (no BLE). Prueba desde la app Android.');
       }
     }
   };

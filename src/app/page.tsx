@@ -53,13 +53,25 @@ export default function LoginPage() {
       return;
     }
     setLoading(true);
-    const { error } = await supabase.auth.signUp({ email, password });
-    setLoading(false);
+    const { data, error } = await supabase.auth.signUp({ email, password });
     if (error) {
+      setLoading(false);
       setError(error.message);
-    } else {
-      setShowCarousel(true);
+      return;
     }
+    // If no session (email confirmation pending), sign in automatically
+    if (!data.session) {
+      const { error: loginError } = await supabase.auth.signInWithPassword({ email, password });
+      setLoading(false);
+      if (loginError) {
+        setError('Cuenta creada pero no se pudo iniciar sesión. Intenta iniciar sesión manualmente.');
+        setMode('login');
+        return;
+      }
+    } else {
+      setLoading(false);
+    }
+    setShowCarousel(true);
   };
 
   const handleCarouselFinish = () => {
