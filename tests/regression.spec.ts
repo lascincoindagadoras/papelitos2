@@ -327,10 +327,7 @@ test.describe('Regression: full business flow', () => {
     await page.locator('input[type="time"]').last().fill('16:00');
 
     await page.getByText('GUARDAR CONFIGURACIÓN').click();
-    await page.waitForTimeout(2000);
-
-    const body = await page.locator('body').textContent() || '';
-    expect(body).toContain('Configuración guardada');
+    await expect(page.getByText('Configuración guardada')).toBeVisible({ timeout: 15000 });
 
     await goToMenu();
   });
