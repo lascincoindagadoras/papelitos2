@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { Usuario } from '@/lib/types';
 import BackToMenu from '@/components/BackToMenu';
+import FormLabel from '@/components/FormLabel';
 
 function NuevaRecompensaContent() {
   const router = useRouter();
@@ -105,36 +106,36 @@ function NuevaRecompensaContent() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600" />
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-500" />
       </div>
     );
   }
 
   return (
     <div className="min-h-screen p-6 pb-24">
-      <h1 className="text-2xl font-bold text-center text-gray-800 mb-6">
+      <h1 className="text-2xl font-bold text-center text-stone-800 mb-6">
         {editId ? 'Editar Recompensa' : 'Crear Recompensa'}
       </h1>
 
       <div className="max-w-lg mx-auto bg-white rounded-2xl shadow-lg p-6">
         <div className="flex flex-col gap-4">
           <div>
-            <label className="block text-sm font-semibold text-gray-600 mb-1">Nombre *</label>
+            <FormLabel label="Nombre" required help="Nombre de la recompensa que aparecerá en el papelito" />
             <input type="text" value={nombre} onChange={(e) => setNombre(e.target.value)}
-              className="w-full border-2 border-gray-200 rounded-xl py-2 px-3 focus:border-indigo-500 focus:outline-none" />
+              className="w-full border-2 border-stone-200 rounded-xl py-2 px-3 focus:border-amber-500 focus:outline-none" />
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-600 mb-1">Descripción</label>
+            <FormLabel label="Descripción" help="Detalle de en qué consiste la recompensa" />
             <textarea value={definicion} onChange={(e) => setDefinicion(e.target.value)} rows={3}
-              className="w-full border-2 border-gray-200 rounded-xl py-2 px-3 focus:border-indigo-500 focus:outline-none" />
+              className="w-full border-2 border-stone-200 rounded-xl py-2 px-3 focus:border-amber-500 focus:outline-none" />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-sm font-semibold text-gray-600 mb-1">Frecuencia</label>
+              <FormLabel label="Frecuencia" help="Periodo de tiempo en el que se acumulan los puntos para esta recompensa" />
               <select value={frecuencia} onChange={(e) => setFrecuencia(e.target.value)}
-                className="w-full border-2 border-gray-200 rounded-xl py-2 px-3 focus:border-indigo-500 focus:outline-none">
+                className="w-full border-2 border-stone-200 rounded-xl py-2 px-3 focus:border-amber-500 focus:outline-none">
                 <option value="diaria">Diaria</option>
                 <option value="semanal">Semanal</option>
                 <option value="mensual">Mensual</option>
@@ -142,17 +143,17 @@ function NuevaRecompensaContent() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-semibold text-gray-600 mb-1">Duración (días)</label>
+              <FormLabel label="Duración (periodos)" help="Cuántos periodos de la frecuencia dura la recompensa. Ej: Frecuencia semanal + Duración 2 = 2 semanas para conseguir los puntos" />
               <input type="number" value={duracion} onChange={(e) => setDuracion(e.target.value)}
                 min={1}
-                className="w-full border-2 border-gray-200 rounded-xl py-2 px-3 focus:border-indigo-500 focus:outline-none" />
+                className="w-full border-2 border-stone-200 rounded-xl py-2 px-3 focus:border-amber-500 focus:outline-none" />
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-600 mb-1">Tipo</label>
+            <FormLabel label="Tipo" help="Personal: solo un usuario puede conseguirla. Común: todos los usuarios pueden conseguirla" />
             <select value={comunOPersonal} onChange={(e) => setComunOPersonal(e.target.value)}
-              className="w-full border-2 border-gray-200 rounded-xl py-2 px-3 focus:border-indigo-500 focus:outline-none">
+              className="w-full border-2 border-stone-200 rounded-xl py-2 px-3 focus:border-amber-500 focus:outline-none">
               <option value="personal">Personal (un usuario)</option>
               <option value="comun">Común (todos los usuarios)</option>
             </select>
@@ -160,9 +161,9 @@ function NuevaRecompensaContent() {
 
           {comunOPersonal === 'personal' && (
             <div>
-              <label className="block text-sm font-semibold text-gray-600 mb-1">Usuario asignado *</label>
+              <FormLabel label="Usuario asignado" required help="Usuario que puede conseguir esta recompensa" />
               <select value={usuarioId} onChange={(e) => setUsuarioId(e.target.value)}
-                className="w-full border-2 border-gray-200 rounded-xl py-2 px-3 focus:border-indigo-500 focus:outline-none">
+                className="w-full border-2 border-stone-200 rounded-xl py-2 px-3 focus:border-amber-500 focus:outline-none">
                 <option value="">Seleccionar usuario...</option>
                 {usuarios.map((u) => (
                   <option key={u.id} value={u.id}>{u.nombre}</option>
@@ -172,19 +173,19 @@ function NuevaRecompensaContent() {
           )}
 
           <div>
-            <label className="block text-sm font-semibold text-gray-600 mb-1">Puntos para canjear *</label>
+            <FormLabel label="Puntos para canjear" required help="Puntos necesarios acumulados en el periodo para obtener la recompensa" />
             <input type="number" value={puntosCanjear} onChange={(e) => setPuntosCanjear(e.target.value)}
               min={1}
-              className="w-full border-2 border-gray-200 rounded-xl py-2 px-3 focus:border-indigo-500 focus:outline-none" />
+              className="w-full border-2 border-stone-200 rounded-xl py-2 px-3 focus:border-amber-500 focus:outline-none" />
           </div>
 
           <div className="flex items-center gap-3">
-            <label className="text-sm font-semibold text-gray-600">Estado:</label>
+            <label className="text-sm font-semibold text-stone-600">Estado:</label>
             <div
               onClick={() => setEstado(!estado)}
               className={`toggle-switch ${estado ? 'active' : ''}`}
             />
-            <span className="text-sm text-gray-500">{estado ? 'Activa' : 'Inactiva'}</span>
+            <span className="text-sm text-stone-500">{estado ? 'Activa' : 'Inactiva'}</span>
           </div>
 
           {error && <p className="text-red-500 text-sm">{error}</p>}
@@ -195,7 +196,7 @@ function NuevaRecompensaContent() {
         <button
           onClick={handleSave}
           disabled={saving}
-          className="bg-amber-600 hover:bg-amber-700 disabled:bg-gray-400 text-white font-bold py-3 px-8 rounded-2xl shadow-lg transition-colors"
+          className="bg-amber-500 hover:bg-amber-600 disabled:bg-gray-400 text-white font-bold py-3 px-8 rounded-2xl shadow-lg transition-colors"
         >
           {saving ? 'Guardando...' : 'GUARDAR'}
         </button>
@@ -210,7 +211,7 @@ export default function NuevaRecompensaPage() {
   return (
     <Suspense fallback={
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600" />
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-500" />
       </div>
     }>
       <NuevaRecompensaContent />

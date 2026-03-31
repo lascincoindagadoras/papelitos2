@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { Usuario } from '@/lib/types';
 import BackToMenu from '@/components/BackToMenu';
+import FormLabel from '@/components/FormLabel';
 
 export default function UsuariosPage() {
   const router = useRouter();
@@ -85,32 +86,32 @@ export default function UsuariosPage() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600" />
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-500" />
       </div>
     );
   }
 
   return (
     <div className="min-h-screen p-6 pb-24">
-      <h1 className="text-2xl font-bold text-center text-gray-800 mb-6">Listado de Usuarios</h1>
+      <h1 className="text-2xl font-bold text-center text-stone-800 mb-6">Listado de Usuarios</h1>
 
       <div className="max-w-lg mx-auto bg-white rounded-2xl shadow-lg overflow-hidden">
         <table className="w-full">
-          <thead className="bg-gray-50">
+          <thead className="bg-amber-50">
             <tr>
-              <th className="text-left py-3 px-4 text-sm font-semibold text-gray-600">Nombre</th>
-              <th className="text-center py-3 px-4 text-sm font-semibold text-gray-600">Edad</th>
-              <th className="text-center py-3 px-4 text-sm font-semibold text-gray-600 w-20">Editar</th>
-              <th className="text-center py-3 px-4 text-sm font-semibold text-gray-600 w-20">Eliminar</th>
+              <th className="text-left py-3 px-4 text-sm font-semibold text-stone-600">Nombre</th>
+              <th className="text-center py-3 px-4 text-sm font-semibold text-stone-600">Edad</th>
+              <th className="text-center py-3 px-4 text-sm font-semibold text-stone-600 w-20">Editar</th>
+              <th className="text-center py-3 px-4 text-sm font-semibold text-stone-600 w-20">Eliminar</th>
             </tr>
           </thead>
           <tbody>
             {usuarios.map((u) => (
-              <tr key={u.id} className="border-t border-gray-100 hover:bg-gray-50">
+              <tr key={u.id} className="border-t border-stone-100 hover:bg-amber-50/50">
                 <td className="py-3 px-4 font-medium">{u.nombre}</td>
-                <td className="py-3 px-4 text-center text-gray-500">{u.edad || '-'}</td>
+                <td className="py-3 px-4 text-center text-stone-500">{u.edad || '-'}</td>
                 <td className="py-3 px-4 text-center">
-                  <button onClick={() => handleEdit(u)} className="text-indigo-600 hover:text-indigo-800 text-lg">✏️</button>
+                  <button onClick={() => handleEdit(u)} className="text-amber-600 hover:text-amber-800 text-lg">✏️</button>
                 </td>
                 <td className="py-3 px-4 text-center">
                   <button onClick={() => handleDelete(u.id)} className="text-red-500 hover:text-red-700 text-lg">🗑️</button>
@@ -119,7 +120,7 @@ export default function UsuariosPage() {
             ))}
             {usuarios.length === 0 && (
               <tr>
-                <td colSpan={4} className="py-8 text-center text-gray-400">No hay usuarios. ¡Añade uno!</td>
+                <td colSpan={4} className="py-8 text-center text-stone-400">No hay usuarios. ¡Añade uno!</td>
               </tr>
             )}
           </tbody>
@@ -132,27 +133,27 @@ export default function UsuariosPage() {
             <h2 className="text-xl font-bold mb-4">{editingId ? 'Editar Usuario' : 'Añadir Usuario'}</h2>
             <div className="flex flex-col gap-3">
               <div>
-                <label className="block text-sm font-semibold text-gray-600 mb-1">Nombre</label>
+                <FormLabel label="Nombre" required help="Nombre del miembro de la familia" />
                 <input
                   type="text"
                   value={nombre}
                   onChange={(e) => setNombre(e.target.value)}
-                  className="w-full border-2 border-gray-200 rounded-xl py-2 px-3 focus:border-indigo-500 focus:outline-none"
+                  className="w-full border-2 border-stone-200 rounded-xl py-2 px-3 focus:border-amber-500 focus:outline-none"
                 />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-gray-600 mb-1">Edad</label>
+                <FormLabel label="Edad" help="Edad del usuario, útil para adaptar las tareas" />
                 <input
                   type="number"
                   value={edad}
                   onChange={(e) => setEdad(e.target.value)}
-                  className="w-full border-2 border-gray-200 rounded-xl py-2 px-3 focus:border-indigo-500 focus:outline-none"
+                  className="w-full border-2 border-stone-200 rounded-xl py-2 px-3 focus:border-amber-500 focus:outline-none"
                 />
               </div>
               {error && <p className="text-red-500 text-sm">{error}</p>}
               <div className="flex gap-3 mt-2">
-                <button onClick={resetForm} className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-3 rounded-xl">Cancelar</button>
-                <button onClick={handleSave} className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-xl">Guardar</button>
+                <button onClick={resetForm} className="flex-1 bg-stone-200 hover:bg-stone-300 text-stone-700 font-semibold py-3 rounded-xl">Cancelar</button>
+                <button onClick={handleSave} className="flex-1 bg-amber-500 hover:bg-amber-600 text-white font-semibold py-3 rounded-xl">Guardar</button>
               </div>
             </div>
           </div>
@@ -162,7 +163,7 @@ export default function UsuariosPage() {
       <div className="fixed bottom-6 right-6 z-50">
         <button
           onClick={() => { resetForm(); setShowForm(true); }}
-          className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-2xl shadow-lg transition-colors"
+          className="bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 px-6 rounded-2xl shadow-lg transition-colors"
         >
           + Añadir Usuario
         </button>

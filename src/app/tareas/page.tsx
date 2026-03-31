@@ -62,7 +62,7 @@ export default function TareasPage() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600" />
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-500" />
       </div>
     );
   }
@@ -78,12 +78,12 @@ export default function TareasPage() {
           placeholder="🔍 Buscar por nombre..."
           value={busqueda}
           onChange={(e) => setBusqueda(e.target.value)}
-          className="flex-1 border-2 border-gray-200 rounded-xl py-2 px-4 focus:border-indigo-500 focus:outline-none"
+          className="flex-1 border-2 border-stone-200 rounded-xl py-2 px-4 focus:border-amber-500 focus:outline-none"
         />
         <select
           value={filtroUsuario}
           onChange={(e) => setFiltroUsuario(e.target.value)}
-          className="border-2 border-gray-200 rounded-xl py-2 px-4 focus:border-indigo-500 focus:outline-none"
+          className="border-2 border-stone-200 rounded-xl py-2 px-4 focus:border-amber-500 focus:outline-none"
         >
           <option value="">Todos los usuarios</option>
           {usuarios.map((u) => (
@@ -118,7 +118,7 @@ export default function TareasPage() {
                 <td className="py-3 px-4 text-center">
                   <button
                     onClick={() => router.push(`/tareas/nueva?id=${t.id}`)}
-                    className="text-indigo-600 hover:text-indigo-800 text-lg"
+                    className="text-amber-600 hover:text-amber-800 text-lg"
                   >✏️</button>
                 </td>
                 <td className="py-3 px-4 text-center">
@@ -141,7 +141,7 @@ export default function TareasPage() {
       <div className="fixed bottom-6 right-6 z-50">
         <button
           onClick={() => router.push('/tareas/nueva')}
-          className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-2xl shadow-lg transition-colors"
+          className="bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 px-6 rounded-2xl shadow-lg transition-colors"
         >
           + Añadir Tarea
         </button>

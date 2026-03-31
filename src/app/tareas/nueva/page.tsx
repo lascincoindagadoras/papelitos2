@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { Usuario } from '@/lib/types';
 import BackToMenu from '@/components/BackToMenu';
+import FormLabel from '@/components/FormLabel';
 
 function NuevaTareaContent() {
   const router = useRouter();
@@ -119,35 +120,35 @@ function NuevaTareaContent() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600" />
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-500" />
       </div>
     );
   }
 
   return (
     <div className="min-h-screen p-6 pb-24">
-      <h1 className="text-2xl font-bold text-center text-gray-800 mb-6">
+      <h1 className="text-2xl font-bold text-center text-stone-800 mb-6">
         {editId ? 'Editar Tarea' : 'Crear Tarea'}
       </h1>
 
       <div className="max-w-lg mx-auto bg-white rounded-2xl shadow-lg p-6">
         <div className="flex flex-col gap-4">
           <div>
-            <label className="block text-sm font-semibold text-gray-600 mb-1">Nombre de la tarea *</label>
+            <FormLabel label="Nombre de la tarea" required help="Nombre corto que aparecerá en el papelito impreso" />
             <input type="text" value={nombre} onChange={(e) => setNombre(e.target.value)}
-              className="w-full border-2 border-gray-200 rounded-xl py-2 px-3 focus:border-indigo-500 focus:outline-none" />
+              className="w-full border-2 border-stone-200 rounded-xl py-2 px-3 focus:border-amber-500 focus:outline-none" />
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-600 mb-1">Descripción</label>
+            <FormLabel label="Descripción" help="Explicación detallada de cómo realizar la tarea" />
             <textarea value={definicion} onChange={(e) => setDefinicion(e.target.value)} rows={3}
-              className="w-full border-2 border-gray-200 rounded-xl py-2 px-3 focus:border-indigo-500 focus:outline-none" />
+              className="w-full border-2 border-stone-200 rounded-xl py-2 px-3 focus:border-amber-500 focus:outline-none" />
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-600 mb-1">Usuario asignado *</label>
+            <FormLabel label="Usuario asignado" required help="Persona responsable de realizar esta tarea" />
             <select value={usuarioId} onChange={(e) => setUsuarioId(e.target.value)}
-              className="w-full border-2 border-gray-200 rounded-xl py-2 px-3 focus:border-indigo-500 focus:outline-none">
+              className="w-full border-2 border-stone-200 rounded-xl py-2 px-3 focus:border-amber-500 focus:outline-none">
               <option value="">Seleccionar usuario...</option>
               {usuarios.map((u) => (
                 <option key={u.id} value={u.id}>{u.nombre}</option>
@@ -157,9 +158,9 @@ function NuevaTareaContent() {
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-sm font-semibold text-gray-600 mb-1">Frecuencia</label>
+              <FormLabel label="Frecuencia" help="Cada cuánto tiempo se genera el papelito de esta tarea" />
               <select value={frecuencia} onChange={(e) => setFrecuencia(e.target.value)}
-                className="w-full border-2 border-gray-200 rounded-xl py-2 px-3 focus:border-indigo-500 focus:outline-none">
+                className="w-full border-2 border-stone-200 rounded-xl py-2 px-3 focus:border-amber-500 focus:outline-none">
                 <option value="diaria">Diaria</option>
                 <option value="semanal">Semanal</option>
                 <option value="mensual">Mensual</option>
@@ -167,9 +168,9 @@ function NuevaTareaContent() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-semibold text-gray-600 mb-1">Hora impresión</label>
+              <FormLabel label="Hora impresión" help="Momento del día en que se imprime el papelito" />
               <select value={horaImpresion} onChange={(e) => setHoraImpresion(e.target.value)}
-                className="w-full border-2 border-gray-200 rounded-xl py-2 px-3 focus:border-indigo-500 focus:outline-none">
+                className="w-full border-2 border-stone-200 rounded-xl py-2 px-3 focus:border-amber-500 focus:outline-none">
                 <option value="mañana">Mañana</option>
                 <option value="tarde">Tarde</option>
               </select>
@@ -180,20 +181,21 @@ function NuevaTareaContent() {
             <div className="grid grid-cols-2 gap-3">
               {(frecuencia === 'semanal' || frecuencia === 'mensual' || frecuencia === 'anual') && (
                 <div>
-                  <label className="block text-sm font-semibold text-gray-600 mb-1">
-                    {frecuencia === 'semanal' ? 'Día semana (1=Lun)' : 'Día del mes'}
-                  </label>
+                  <FormLabel
+                    label={frecuencia === 'semanal' ? 'Día semana (1=Lun)' : 'Día del mes'}
+                    help={frecuencia === 'semanal' ? 'Día de la semana: 1=Lunes, 7=Domingo' : 'Número del día del mes (1-31)'}
+                  />
                   <input type="number" value={dia} onChange={(e) => setDia(e.target.value)}
                     min={1} max={frecuencia === 'semanal' ? 7 : 31}
-                    className="w-full border-2 border-gray-200 rounded-xl py-2 px-3 focus:border-indigo-500 focus:outline-none" />
+                    className="w-full border-2 border-stone-200 rounded-xl py-2 px-3 focus:border-amber-500 focus:outline-none" />
                 </div>
               )}
               {frecuencia === 'anual' && (
                 <div>
-                  <label className="block text-sm font-semibold text-gray-600 mb-1">Mes (1-12)</label>
+                  <FormLabel label="Mes (1-12)" help="Mes del año en que se generará la tarea" />
                   <input type="number" value={mes} onChange={(e) => setMes(e.target.value)}
                     min={1} max={12}
-                    className="w-full border-2 border-gray-200 rounded-xl py-2 px-3 focus:border-indigo-500 focus:outline-none" />
+                    className="w-full border-2 border-stone-200 rounded-xl py-2 px-3 focus:border-amber-500 focus:outline-none" />
                 </div>
               )}
             </div>
@@ -201,32 +203,32 @@ function NuevaTareaContent() {
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-sm font-semibold text-gray-600 mb-1">Puntos OK (+)</label>
+              <FormLabel label="Puntos OK (+)" help="Puntos que gana el usuario al completar la tarea" />
               <input type="number" value={puntosOk} onChange={(e) => setPuntosOk(e.target.value)}
                 min={0}
-                className="w-full border-2 border-gray-200 rounded-xl py-2 px-3 focus:border-indigo-500 focus:outline-none" />
+                className="w-full border-2 border-stone-200 rounded-xl py-2 px-3 focus:border-amber-500 focus:outline-none" />
             </div>
             <div>
-              <label className="block text-sm font-semibold text-gray-600 mb-1">Puntos KO (-)</label>
+              <FormLabel label="Puntos KO (-)" help="Puntos que pierde el usuario si no completa la tarea" />
               <input type="number" value={puntosKo} onChange={(e) => setPuntosKo(e.target.value)}
                 min={0} placeholder="Se guardará negativo"
-                className="w-full border-2 border-gray-200 rounded-xl py-2 px-3 focus:border-indigo-500 focus:outline-none" />
+                className="w-full border-2 border-stone-200 rounded-xl py-2 px-3 focus:border-amber-500 focus:outline-none" />
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-600 mb-1">Fecha de caducidad</label>
+            <FormLabel label="Fecha de caducidad" help="Fecha a partir de la cual la tarea dejará de generarse" />
             <input type="date" value={fechaCaducidad} onChange={(e) => setFechaCaducidad(e.target.value)}
-              className="w-full border-2 border-gray-200 rounded-xl py-2 px-3 focus:border-indigo-500 focus:outline-none" />
+              className="w-full border-2 border-stone-200 rounded-xl py-2 px-3 focus:border-amber-500 focus:outline-none" />
           </div>
 
           <div className="flex items-center gap-3">
-            <label className="text-sm font-semibold text-gray-600">Estado:</label>
+            <label className="text-sm font-semibold text-stone-600">Estado:</label>
             <div
               onClick={() => setEstado(!estado)}
               className={`toggle-switch ${estado ? 'active' : ''}`}
             />
-            <span className="text-sm text-gray-500">{estado ? 'Activa' : 'Inactiva'}</span>
+            <span className="text-sm text-stone-500">{estado ? 'Activa' : 'Inactiva'}</span>
           </div>
 
           {error && <p className="text-red-500 text-sm">{error}</p>}
@@ -237,7 +239,7 @@ function NuevaTareaContent() {
         <button
           onClick={handleSave}
           disabled={saving}
-          className="bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-400 text-white font-bold py-3 px-8 rounded-2xl shadow-lg transition-colors"
+          className="bg-amber-500 hover:bg-amber-600 disabled:bg-gray-400 text-white font-bold py-3 px-8 rounded-2xl shadow-lg transition-colors"
         >
           {saving ? 'Guardando...' : 'GUARDAR'}
         </button>
@@ -252,7 +254,7 @@ export default function NuevaTareaPage() {
   return (
     <Suspense fallback={
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600" />
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-500" />
       </div>
     }>
       <NuevaTareaContent />

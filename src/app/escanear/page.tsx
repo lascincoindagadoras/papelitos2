@@ -142,7 +142,7 @@ export default function EscanearPage() {
 
       {!scanning ? (
         <div className="flex flex-col items-center gap-6 mt-10">
-          <div className="w-32 h-32 bg-indigo-100 rounded-3xl flex items-center justify-center">
+          <div className="w-32 h-32 bg-amber-100 rounded-3xl flex items-center justify-center">
             <span className="text-6xl">📷</span>
           </div>
           <p className="text-gray-500 text-center max-w-xs">
@@ -150,7 +150,7 @@ export default function EscanearPage() {
           </p>
           <button
             onClick={startScanner}
-            className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 px-8 rounded-2xl text-lg shadow-lg transition-colors"
+            className="bg-amber-500 hover:bg-amber-600 text-white font-bold py-4 px-8 rounded-2xl text-lg shadow-lg transition-colors"
           >
             ESCANEAR PAPELITO
           </button>
@@ -187,7 +187,7 @@ export default function EscanearPage() {
 
       <button
         onClick={() => { stopScanner(); router.push('/menu'); }}
-        className="fixed bottom-6 left-6 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-3 px-6 rounded-xl shadow-md transition-colors z-50"
+        className="fixed bottom-6 left-6 bg-stone-100 hover:bg-stone-200 text-stone-700 font-semibold py-3 px-6 rounded-xl shadow-md transition-colors z-50"
       >
         ← SALIR
       </button>

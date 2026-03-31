@@ -62,7 +62,7 @@ export default function RecompensasPage() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600" />
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-500" />
       </div>
     );
   }
@@ -77,12 +77,12 @@ export default function RecompensasPage() {
           placeholder="🔍 Buscar por nombre..."
           value={busqueda}
           onChange={(e) => setBusqueda(e.target.value)}
-          className="flex-1 border-2 border-gray-200 rounded-xl py-2 px-4 focus:border-indigo-500 focus:outline-none"
+          className="flex-1 border-2 border-stone-200 rounded-xl py-2 px-4 focus:border-amber-500 focus:outline-none"
         />
         <select
           value={filtroUsuario}
           onChange={(e) => setFiltroUsuario(e.target.value)}
-          className="border-2 border-gray-200 rounded-xl py-2 px-4 focus:border-indigo-500 focus:outline-none"
+          className="border-2 border-stone-200 rounded-xl py-2 px-4 focus:border-amber-500 focus:outline-none"
         >
           <option value="">Todos los usuarios</option>
           {usuarios.map((u) => (
@@ -118,7 +118,7 @@ export default function RecompensasPage() {
                 <td className="py-3 px-4 text-center">
                   <button
                     onClick={() => router.push(`/recompensas/nueva?id=${r.id}`)}
-                    className="text-indigo-600 hover:text-indigo-800 text-lg"
+                    className="text-amber-600 hover:text-amber-800 text-lg"
                   >✏️</button>
                 </td>
                 <td className="py-3 px-4 text-center">

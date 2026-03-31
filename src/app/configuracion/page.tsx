@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { Ajustes } from '@/lib/types';
 import BackToMenu from '@/components/BackToMenu';
+import FormLabel from '@/components/FormLabel';
 
 export default function ConfiguracionPage() {
   const router = useRouter();
@@ -136,46 +137,45 @@ export default function ConfiguracionPage() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600" />
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-500" />
       </div>
     );
   }
 
   return (
     <div className="min-h-screen p-6 pb-24">
-      <h1 className="text-2xl font-bold text-center text-gray-800 mb-6">⚙️ Configuración</h1>
+      <h1 className="text-2xl font-bold text-center text-stone-800 mb-6">Configuración</h1>
 
       <div className="max-w-lg mx-auto space-y-6">
         {/* Impresora */}
         <div className="bg-white rounded-2xl shadow-lg p-6">
-          <h2 className="text-lg font-bold text-gray-700 mb-4">🖨️ Configurar Impresora</h2>
+          <h2 className="text-lg font-bold text-stone-700 mb-4">Configurar Impresora</h2>
 
           <div className="mb-4">
-            <label className="block text-sm font-semibold text-gray-600 mb-1">Nombre de impresora</label>
+            <FormLabel label="Nombre de impresora" help="Identificador del dispositivo Bluetooth de la impresora térmica" />
             <input
               type="text"
               value={nombreImpresora}
               onChange={(e) => setNombreImpresora(e.target.value)}
               placeholder="Ej: Printer_58BT"
-              className="w-full border-2 border-gray-200 rounded-xl py-2 px-3 focus:border-indigo-500 focus:outline-none"
+              className="w-full border-2 border-stone-200 rounded-xl py-2 px-3 focus:border-amber-500 focus:outline-none"
             />
           </div>
 
           <button
             onClick={handleBuscarBluetooth}
             disabled={bluetoothStatus === 'searching'}
-            className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-semibold py-3 rounded-xl transition-colors"
+            className="w-full bg-stone-700 hover:bg-stone-800 disabled:bg-gray-400 text-white font-semibold py-3 rounded-xl transition-colors"
           >
-            {bluetoothStatus === 'searching' ? '🔍 Buscando dispositivos...' :
-             bluetoothStatus === 'connected' ? '✅ Conectado - Buscar otra' :
-             '🔘 Conectar Impresora Bluetooth'}
+            {bluetoothStatus === 'searching' ? 'Buscando dispositivos...' :
+             bluetoothStatus === 'connected' ? 'Conectado - Buscar otra' :
+             'Conectar Impresora Bluetooth'}
           </button>
 
           {dispositivosBT.length > 0 && (
             <div className="mt-3 space-y-2">
               {dispositivosBT.map((d) => (
                 <div key={d.id} className="flex items-center gap-2 p-2 bg-green-50 rounded-lg">
-                  <span>🖨️</span>
                   <span className="font-medium text-green-800">{d.name}</span>
                   <span className="text-green-600 text-sm ml-auto">Conectado</span>
                 </div>
@@ -186,25 +186,25 @@ export default function ConfiguracionPage() {
 
         {/* Horarios */}
         <div className="bg-white rounded-2xl shadow-lg p-6">
-          <h2 className="text-lg font-bold text-gray-700 mb-4">🕐 Horarios de Impresión</h2>
+          <h2 className="text-lg font-bold text-stone-700 mb-4">Horarios de Impresión</h2>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-semibold text-gray-600 mb-1">Hora mañana</label>
+              <FormLabel label="Hora mañana" help="Hora a la que se imprimen los papelitos de la mañana" />
               <input
                 type="time"
                 value={horaManana}
                 onChange={(e) => setHoraManana(e.target.value)}
-                className="w-full border-2 border-gray-200 rounded-xl py-2 px-3 focus:border-indigo-500 focus:outline-none"
+                className="w-full border-2 border-stone-200 rounded-xl py-2 px-3 focus:border-amber-500 focus:outline-none"
               />
             </div>
             <div>
-              <label className="block text-sm font-semibold text-gray-600 mb-1">Hora tarde</label>
+              <FormLabel label="Hora tarde" help="Hora a la que se imprimen los papelitos de la tarde" />
               <input
                 type="time"
                 value={horaTarde}
                 onChange={(e) => setHoraTarde(e.target.value)}
-                className="w-full border-2 border-gray-200 rounded-xl py-2 px-3 focus:border-indigo-500 focus:outline-none"
+                className="w-full border-2 border-stone-200 rounded-xl py-2 px-3 focus:border-amber-500 focus:outline-none"
               />
             </div>
           </div>
@@ -223,7 +223,7 @@ export default function ConfiguracionPage() {
         <button
           onClick={handleSave}
           disabled={saving}
-          className="w-full bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-400 text-white font-bold py-4 rounded-2xl shadow-lg transition-colors"
+          className="w-full bg-amber-500 hover:bg-amber-600 disabled:bg-gray-400 text-white font-bold py-4 rounded-2xl shadow-lg transition-colors"
         >
           {saving ? 'Guardando...' : 'GUARDAR CONFIGURACIÓN'}
         </button>

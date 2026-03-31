@@ -45,18 +45,18 @@ export default function MenuPage() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600" />
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-500" />
       </div>
     );
   }
 
   const menuItems = [
-    { label: '📷 ESCANEAR TAREAS', href: '/escanear', color: 'bg-indigo-600 hover:bg-indigo-700' },
-    { label: '👥 GESTIONAR USUARIOS', href: '/usuarios', color: 'bg-emerald-600 hover:bg-emerald-700' },
-    { label: '📋 GESTIONAR TAREAS', href: '/tareas', color: 'bg-blue-600 hover:bg-blue-700' },
-    { label: '🏆 GESTIONAR RECOMPENSAS', href: '/recompensas', color: 'bg-amber-600 hover:bg-amber-700' },
-    { label: '📄 GESTIÓN PAPELITOS', href: '/papelitos', color: 'bg-purple-600 hover:bg-purple-700' },
-    { label: '⚙️ CONFIGURACIÓN', href: '/configuracion', color: 'bg-gray-600 hover:bg-gray-700' },
+    { label: '📷 ESCANEAR TAREAS', href: '/escanear', color: 'bg-stone-700 hover:bg-stone-800' },
+    { label: '👥 GESTIONAR USUARIOS', href: '/usuarios', color: 'bg-amber-600 hover:bg-amber-700' },
+    { label: '📋 GESTIONAR TAREAS', href: '/tareas', color: 'bg-yellow-600 hover:bg-yellow-700' },
+    { label: '🏆 GESTIONAR RECOMPENSAS', href: '/recompensas', color: 'bg-orange-500 hover:bg-orange-600' },
+    { label: '📄 GESTIÓN PAPELITOS', href: '/papelitos', color: 'bg-amber-800 hover:bg-amber-900' },
+    { label: '⚙️ CONFIGURACIÓN', href: '/configuracion', color: 'bg-stone-500 hover:bg-stone-600' },
   ];
 
   return (
@@ -77,7 +77,7 @@ export default function MenuPage() {
         <button
           onClick={handleInicioDia}
           disabled={inicioDiaLoading}
-          className="w-full bg-rose-600 hover:bg-rose-700 disabled:bg-gray-400 text-white font-bold py-4 px-6 rounded-2xl text-lg shadow-lg transition-colors"
+          className="w-full bg-amber-500 hover:bg-amber-600 disabled:bg-gray-400 text-white font-bold py-4 px-6 rounded-2xl text-lg shadow-lg transition-colors"
         >
           {inicioDiaLoading ? '⏳ Generando...' : '🌅 INICIO DE DÍA'}
         </button>

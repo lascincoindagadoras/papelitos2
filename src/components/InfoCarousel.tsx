@@ -16,14 +16,13 @@ export default function InfoCarousel({ onFinish }: Props) {
       .from('tarjeta_informacion')
       .select('*')
       .order('posicion', { ascending: true })
-      .then(({ data }) => {
-        if (data && data.length > 0) {
-          setTarjetas(data);
-        } else {
+      .then(({ data, error }) => {
+        if (error || !data || data.length === 0) {
           onFinish();
+        } else {
+          setTarjetas(data);
         }
-      })
-      .catch(() => onFinish());
+      });
   }, []);  // eslint-disable-line react-hooks/exhaustive-deps
 
   if (tarjetas.length === 0) return null;
@@ -53,14 +52,14 @@ export default function InfoCarousel({ onFinish }: Props) {
           {isLast ? (
             <button
               onClick={onFinish}
-              className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-6 rounded-xl"
+              className="bg-amber-500 hover:bg-amber-600 text-white font-semibold py-2 px-6 rounded-xl"
             >
               ¡Empezar!
             </button>
           ) : (
             <button
               onClick={() => setCurrentIndex(currentIndex + 1)}
-              className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-6 rounded-xl"
+              className="bg-amber-500 hover:bg-amber-600 text-white font-semibold py-2 px-6 rounded-xl"
             >
               Siguiente →
             </button>
