@@ -25,10 +25,24 @@ export default function LoginPage() {
   if (checkingSession) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600" />
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-500" />
       </div>
     );
   }
+
+  const needsCarousel = () => {
+    try {
+      return !localStorage.getItem('cucla_carousel_seen');
+    } catch {
+      return false;
+    }
+  };
+
+  const markCarouselSeen = () => {
+    try {
+      localStorage.setItem('cucla_carousel_seen', '1');
+    } catch {}
+  };
 
   const handleLogin = async () => {
     setError('');
@@ -37,6 +51,8 @@ export default function LoginPage() {
     setLoading(false);
     if (error) {
       setError('Email o contraseña incorrectos');
+    } else if (needsCarousel()) {
+      setShowCarousel(true);
     } else {
       router.push('/menu');
     }
@@ -75,6 +91,7 @@ export default function LoginPage() {
   };
 
   const handleCarouselFinish = () => {
+    markCarouselSeen();
     setShowCarousel(false);
     router.push('/menu');
   };
@@ -90,13 +107,13 @@ export default function LoginPage() {
           <div className="w-full flex flex-col gap-4 mt-8">
             <button
               onClick={() => setMode('login')}
-              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 px-6 rounded-2xl text-lg shadow-lg transition-colors"
+              className="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-4 px-6 rounded-2xl text-lg shadow-lg transition-colors"
             >
               INICIAR SESIÓN
             </button>
             <button
               onClick={() => setMode('register')}
-              className="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-4 px-6 rounded-2xl text-lg shadow-lg transition-colors"
+              className="w-full bg-stone-700 hover:bg-stone-800 text-white font-bold py-4 px-6 rounded-2xl text-lg shadow-lg transition-colors"
             >
               CREAR CUENTA
             </button>
@@ -106,22 +123,22 @@ export default function LoginPage() {
         {(mode === 'login' || mode === 'register') && (
           <div className="w-full flex flex-col gap-4 mt-4">
             <div>
-              <label className="block text-sm font-semibold text-gray-600 mb-1">EMAIL</label>
+              <label className="block text-sm font-semibold text-stone-600 mb-1">EMAIL</label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full border-2 border-gray-200 rounded-xl py-3 px-4 text-lg focus:border-indigo-500 focus:outline-none transition-colors"
+                className="w-full border-2 border-stone-200 rounded-xl py-3 px-4 text-lg focus:border-amber-500 focus:outline-none transition-colors"
                 placeholder="correo@ejemplo.com"
               />
             </div>
             <div>
-              <label className="block text-sm font-semibold text-gray-600 mb-1">CONTRASEÑA</label>
+              <label className="block text-sm font-semibold text-stone-600 mb-1">CONTRASEÑA</label>
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full border-2 border-gray-200 rounded-xl py-3 px-4 text-lg focus:border-indigo-500 focus:outline-none transition-colors"
+                className="w-full border-2 border-stone-200 rounded-xl py-3 px-4 text-lg focus:border-amber-500 focus:outline-none transition-colors"
                 placeholder="••••••"
               />
             </div>
@@ -133,14 +150,14 @@ export default function LoginPage() {
             <button
               onClick={mode === 'login' ? handleLogin : handleRegister}
               disabled={loading}
-              className="w-full bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-400 text-white font-bold py-4 px-6 rounded-2xl text-lg shadow-lg transition-colors"
+              className="w-full bg-amber-500 hover:bg-amber-600 disabled:bg-gray-400 text-white font-bold py-4 px-6 rounded-2xl text-lg shadow-lg transition-colors"
             >
               {loading ? 'Cargando...' : mode === 'login' ? 'SIGUIENTE' : 'GUARDAR'}
             </button>
 
             <button
               onClick={() => { setMode('initial'); setError(''); }}
-              className="text-gray-500 hover:text-gray-700 text-sm"
+              className="text-stone-500 hover:text-stone-700 text-sm"
             >
               ← Volver
             </button>
