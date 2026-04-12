@@ -219,6 +219,8 @@ export function createMXW01Printer(): MXW01Printer {
     }
 
     // Convert canvas to 1-bit bitmap (MXW01 format)
+    // Threshold 200: Canvas anti-aliases text creating gray pixels;
+    // anything darker than very light gray is treated as black for crisp output.
     const imageData = c.getImageData(0, 0, PRINTER_WIDTH_PX, totalHeight);
     const pixels = imageData.data;
     const bitmap = new Uint8Array(PRINTER_WIDTH_BYTES * totalHeight);
@@ -227,7 +229,7 @@ export function createMXW01Printer(): MXW01Printer {
       for (let col = 0; col < PRINTER_WIDTH_PX; col++) {
         const idx = (row * PRINTER_WIDTH_PX + col) * 4;
         const gray = pixels[idx] * 0.299 + pixels[idx + 1] * 0.587 + pixels[idx + 2] * 0.114;
-        if (gray < 128) { // Black pixel
+        if (gray < 200) { // Aggressive threshold: anti-aliased grays → black
           const byteIdx = row * PRINTER_WIDTH_BYTES + Math.floor(col / 8);
           bitmap[byteIdx] |= (1 << (col % 8));
         }
@@ -250,6 +252,7 @@ export function createMXW01Printer(): MXW01Printer {
         const ctx = canvas.getContext('2d')!;
         ctx.fillStyle = 'white';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.imageSmoothingEnabled = false; // No interpolation → crisp QR pixels
         const x = (PRINTER_WIDTH_PX - size) / 2;
         ctx.drawImage(img, x, 10, size, size);
 
@@ -260,7 +263,7 @@ export function createMXW01Printer(): MXW01Printer {
           for (let col = 0; col < PRINTER_WIDTH_PX; col++) {
             const idx = (row * PRINTER_WIDTH_PX + col) * 4;
             const gray = pixels[idx] * 0.299 + pixels[idx + 1] * 0.587 + pixels[idx + 2] * 0.114;
-            if (gray < 128) {
+            if (gray < 200) { // Aggressive threshold for crisp QR
               const byteIdx = row * PRINTER_WIDTH_BYTES + Math.floor(col / 8);
               bitmap[byteIdx] |= (1 << (col % 8));
             }
