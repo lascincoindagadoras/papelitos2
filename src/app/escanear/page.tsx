@@ -30,8 +30,17 @@ export default function EscanearPage() {
       scannerRef.current = scanner;
 
       await scanner.start(
-        { facingMode: 'environment' },
-        { fps: 10, qrbox: { width: 250, height: 250 } },
+        { facingMode: { exact: 'environment' } },
+        {
+          fps: 10,
+          qrbox: { width: 250, height: 250 },
+          videoConstraints: {
+            facingMode: { exact: 'environment' },
+            focusMode: 'continuous',
+            width: { ideal: 1280 },
+            height: { ideal: 720 },
+          } as MediaTrackConstraints,
+        },
         async (decodedText: string) => {
           await handleScan(decodedText);
         },
