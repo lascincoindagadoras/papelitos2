@@ -402,9 +402,9 @@ export function createMXW01Printer(): MXW01Printer {
         ], 22));
         parts.push(separatorBitmap());
 
-        // QR Code
+        // QR Code (280px ~ 73% del ancho para legibilidad a distancia)
         try {
-          const qr = await qrToBitmap(papelito.codigo, 150);
+          const qr = await qrToBitmap(papelito.codigo, 280);
           parts.push(qr);
         } catch {
           parts.push(textToBitmap(['[QR no disponible]'], 16));
