@@ -4,12 +4,15 @@ import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { inicioDia } from '@/lib/inicio-dia';
 import Logo from '@/components/Logo';
+import InfoCarousel from '@/components/InfoCarousel';
 
 export default function MenuPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [inicioDiaLoading, setInicioDiaLoading] = useState(false);
   const [mensaje, setMensaje] = useState('');
+  const [showCarousel, setShowCarousel] = useState(false);
+  const [fechaHora, setFechaHora] = useState('');
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -17,6 +20,16 @@ export default function MenuPage() {
       else setLoading(false);
     });
   }, [router]);
+
+  useEffect(() => {
+    const update = () => {
+      const now = new Date();
+      setFechaHora(now.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) + '  ' + now.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }));
+    };
+    update();
+    const interval = setInterval(update, 60000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleInicioDia = async () => {
     setInicioDiaLoading(true);
@@ -61,18 +74,20 @@ export default function MenuPage() {
 
   return (
     <div className="min-h-screen flex flex-col items-center p-6 pt-10">
-      <Logo />
+      {showCarousel && <InfoCarousel onFinish={() => setShowCarousel(false)} />}
+      <Logo onClick={() => setShowCarousel(true)} />
+      {fechaHora && (
+        <p className="text-sm text-stone-400 mt-2">{fechaHora}</p>
+      )}
 
       <div className="w-full max-w-sm flex flex-col gap-4 mt-10">
-        {menuItems.map((item) => (
-          <button
-            key={item.href}
-            onClick={() => router.push(item.href)}
-            className={`w-full ${item.color} text-white font-bold py-4 px-6 rounded-2xl text-lg shadow-lg transition-colors`}
-          >
-            {item.label}
-          </button>
-        ))}
+        <button
+          key="/escanear"
+          onClick={() => router.push('/escanear')}
+          className="w-full bg-stone-700 hover:bg-stone-800 text-white font-bold py-4 px-6 rounded-2xl text-lg shadow-lg transition-colors"
+        >
+          📷 ESCANEAR TAREAS
+        </button>
 
         <button
           onClick={handleInicioDia}
@@ -87,6 +102,16 @@ export default function MenuPage() {
             {mensaje}
           </div>
         )}
+
+        {menuItems.slice(1).map((item) => (
+          <button
+            key={item.href}
+            onClick={() => router.push(item.href)}
+            className={`w-full ${item.color} text-white font-bold py-4 px-6 rounded-2xl text-lg shadow-lg transition-colors`}
+          >
+            {item.label}
+          </button>
+        ))}
       </div>
 
       <button

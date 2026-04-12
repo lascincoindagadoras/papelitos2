@@ -1,31 +1,27 @@
 'use client';
-import { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabase';
-import { TarjetaInformacion } from '@/lib/types';
+import { useState, type ReactNode } from 'react';
 
 interface Props {
   onFinish: () => void;
 }
 
+const tarjetas: ReactNode[] = [
+  '¡Bienvenido! Soy CUCLA y te voy a enseñar a usar la aplicación.',
+  'Lo primero es crear los usuarios que forman tu familia, en la pantalla "Gestionar usuarios".',
+  'Cuando hayas creado los usuarios, crea las tareas que debe hacer cada uno, en la pantalla "Gestionar tareas".',
+  'Después crea las recompensas en la pantalla "Gestionar recompensas". Pueden ser individuales o para todos.',
+  'Para empezar el día debes pulsar en "Inicio de día" con lo que la app cargará todas las tareas por hacer y las posibles recompensas de ese día.',
+  'Cuando llegue la hora de impresión (mañana o tarde) se imprimirán los papelitos de cada uno con las tareas a realizar. Si lo pierdes, puedes reimprimir un papelito en "Gestión de papelitos".',
+  'Cuando una tarea haya sido completada, debes escanear el código del papelito en "Escanear tareas". Esto permitirá a la app sumar los puntos al usuario.',
+  'Cada tarea tiene puntos OK y puntos KO, que son negativos, si no se hace la tarea te restan los puntos KO que los padres han decidido poner. Se inicia el día con saldo negativo, como si no hubieras hecho ninguna tarea. A medida que se hacen las tareas, se recuperan los puntos KO y se suman los puntos OK.',
+  'Cuando los puntos para una recompensa se alcanzan, la aplicación imprimirá un papelito con la recompensa.',
+  'Para enlazar con la impresora térmica pincha en "Configuración". También puedes ajustar ahí las horas de impresión.',
+  <>Aquí tienes un enlace para acceder a un video donde te explica como hacer una cajita con papel reciclado para guardar los papelitos y recompensas impresas: <a href="https://youtu.be/MeUMckQwe-c" target="_blank" rel="noopener noreferrer" className="text-amber-600 underline">ver vídeo</a></>,
+  'Si en algún momento tienes alguna duda puedes pinchar en el logo y te volverá a salir toda esta información.',
+];
+
 export default function InfoCarousel({ onFinish }: Props) {
-  const [tarjetas, setTarjetas] = useState<TarjetaInformacion[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
-
-  useEffect(() => {
-    supabase
-      .from('tarjeta_informacion')
-      .select('*')
-      .order('posicion', { ascending: true })
-      .then(({ data, error }) => {
-        if (error || !data || data.length === 0) {
-          onFinish();
-        } else {
-          setTarjetas(data);
-        }
-      });
-  }, []);  // eslint-disable-line react-hooks/exhaustive-deps
-
-  if (tarjetas.length === 0) return null;
 
   const current = tarjetas[currentIndex];
   const isLast = currentIndex === tarjetas.length - 1;
@@ -37,7 +33,7 @@ export default function InfoCarousel({ onFinish }: Props) {
           <div className="text-sm text-gray-400 mb-2">
             {currentIndex + 1} / {tarjetas.length}
           </div>
-          <p className="text-lg text-gray-700 leading-relaxed">{current.texto}</p>
+          <p className="text-lg text-gray-700 leading-relaxed">{current}</p>
         </div>
 
         <div className="flex justify-between items-center">

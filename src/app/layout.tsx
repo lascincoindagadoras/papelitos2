@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "CUCLA - Tareas divertidas en familia",
+  title: "CUCLA - Consigue Una Casa Limpia Ayudando",
   description: "Organiza las tareas del hogar de forma divertida para los niños",
 };
 

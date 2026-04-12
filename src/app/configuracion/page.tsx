@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { Ajustes } from '@/lib/types';
+import { getMXW01Printer, PrinterStatus } from '@/lib/mxw01-printer';
 import BackToMenu from '@/components/BackToMenu';
 import FormLabel from '@/components/FormLabel';
 
@@ -16,8 +17,7 @@ export default function ConfiguracionPage() {
   const [nombreImpresora, setNombreImpresora] = useState('');
   const [horaManana, setHoraManana] = useState('08:00');
   const [horaTarde, setHoraTarde] = useState('16:00');
-  const [bluetoothStatus, setBluetoothStatus] = useState<'idle' | 'searching' | 'connected' | 'error'>('idle');
-  const [dispositivosBT, setDispositivosBT] = useState<Array<{ name: string; id: string }>>([]);
+  const [printerStatus, setPrinterStatus] = useState<PrinterStatus>('disconnected');
 
   useEffect(() => {
     loadAjustes();
@@ -68,70 +68,38 @@ export default function ConfiguracionPage() {
   };
 
   const handleBuscarBluetooth = async () => {
-    // Web Bluetooth API - funciona en Chrome y Edge
-    const nav = navigator as Navigator & {
-      bluetooth?: {
-        requestDevice: (options: {
-          acceptAllDevices?: boolean;
-          filters?: Array<{ services?: string[]; name?: string; namePrefix?: string }>;
-          optionalServices?: string[];
-        }) => Promise<{ name?: string; id: string }>;
-        getDevices?: () => Promise<Array<{ name?: string; id: string }>>;
-      };
-    };
-    if (!nav.bluetooth) {
-      setMensaje('⚠️ Bluetooth no disponible en este navegador. Usa Chrome/Edge o la app Android.');
-      setBluetoothStatus('error');
-      return;
-    }
-
-    setBluetoothStatus('searching');
-    setDispositivosBT([]);
+    const printer = getMXW01Printer();
+    printer.onStatusChange = setPrinterStatus;
 
     try {
-      // Try to get already-paired devices first
-      if (nav.bluetooth.getDevices) {
-        try {
-          const pairedDevices = await nav.bluetooth.getDevices();
-          if (pairedDevices.length > 0) {
-            const devices = pairedDevices.map(d => ({
-              name: d.name || 'Dispositivo sin nombre',
-              id: d.id,
-            }));
-            setDispositivosBT(devices);
-          }
-        } catch {
-          // getDevices may not be supported, continue to requestDevice
-        }
-      }
-
-      // Open browser device picker (shows all discoverable BLE devices)
-      const device = await nav.bluetooth.requestDevice({
-        acceptAllDevices: true,
-        optionalServices: [
-          'generic_access',
-          '000018f0-0000-1000-8000-00805f9b34fb', // Common thermal printer service
-        ],
-      });
-
-      if (device) {
-        setDispositivosBT(prev => {
-          const exists = prev.some(d => d.id === device.id);
-          return exists ? prev : [...prev, { name: device.name || 'Dispositivo', id: device.id }];
-        });
-        setNombreImpresora(device.name || device.id);
-        setBluetoothStatus('connected');
-        setMensaje(`✅ Dispositivo seleccionado: ${device.name || device.id}`);
-      }
+      await printer.connect();
+      setNombreImpresora(printer.deviceName || 'MXW01');
+      setMensaje(`✅ Conectada: ${printer.deviceName}`);
     } catch (err: unknown) {
       const errorMsg = err instanceof Error ? err.message : 'Error desconocido';
       if (errorMsg.includes('cancelled') || errorMsg.includes('canceled')) {
-        setBluetoothStatus('idle');
+        setPrinterStatus('disconnected');
       } else {
-        setBluetoothStatus('error');
-        setMensaje('❌ Error Bluetooth: ' + errorMsg + '. Si no ves tu impresora, puede que use Bluetooth clásico (no BLE). Prueba desde la app Android.');
+        setMensaje('❌ Error: ' + errorMsg);
       }
     }
+    setTimeout(() => setMensaje(''), 4000);
+  };
+
+  const handleTestPrint = async () => {
+    const printer = getMXW01Printer();
+    if (printer.status !== 'ready') {
+      setMensaje('⚠️ Conecta la impresora primero');
+      setTimeout(() => setMensaje(''), 3000);
+      return;
+    }
+    try {
+      await printer.testPrint();
+      setMensaje('✅ Test de impresión enviado');
+    } catch (err: unknown) {
+      setMensaje('❌ Error: ' + (err instanceof Error ? err.message : 'Error'));
+    }
+    setTimeout(() => setMensaje(''), 4000);
   };
 
   if (loading) {
@@ -149,39 +117,45 @@ export default function ConfiguracionPage() {
       <div className="max-w-lg mx-auto space-y-6">
         {/* Impresora */}
         <div className="bg-white rounded-2xl shadow-lg p-6">
-          <h2 className="text-lg font-bold text-stone-700 mb-4">Configurar Impresora</h2>
+          <h2 className="text-lg font-bold text-stone-700 mb-4">Impresora Térmica MXW01</h2>
 
           <div className="mb-4">
-            <FormLabel label="Nombre de impresora" help="Identificador del dispositivo Bluetooth de la impresora térmica" />
-            <input
-              type="text"
-              value={nombreImpresora}
-              onChange={(e) => setNombreImpresora(e.target.value)}
-              placeholder="Ej: Printer_58BT"
-              className="w-full border-2 border-stone-200 rounded-xl py-2 px-3 focus:border-amber-500 focus:outline-none"
-            />
+            <div className="flex items-center gap-2 mb-2">
+              <div className={`w-3 h-3 rounded-full ${
+                printerStatus === 'ready' ? 'bg-green-500' :
+                printerStatus === 'connecting' || printerStatus === 'printing' ? 'bg-amber-500 animate-pulse' :
+                'bg-gray-400'
+              }`} />
+              <span className="text-sm text-stone-600">
+                {printerStatus === 'disconnected' && 'Desconectada'}
+                {printerStatus === 'connecting' && 'Conectando...'}
+                {printerStatus === 'ready' && `Conectada: ${nombreImpresora}`}
+                {printerStatus === 'printing' && 'Imprimiendo...'}
+                {printerStatus === 'error' && 'Error de conexión'}
+              </span>
+            </div>
           </div>
 
-          <button
-            onClick={handleBuscarBluetooth}
-            disabled={bluetoothStatus === 'searching'}
-            className="w-full bg-stone-700 hover:bg-stone-800 disabled:bg-gray-400 text-white font-semibold py-3 rounded-xl transition-colors"
-          >
-            {bluetoothStatus === 'searching' ? 'Buscando dispositivos...' :
-             bluetoothStatus === 'connected' ? 'Conectado - Buscar otra' :
-             'Conectar Impresora Bluetooth'}
-          </button>
+          <div className="space-y-3">
+            <button
+              onClick={handleBuscarBluetooth}
+              disabled={printerStatus === 'connecting' || printerStatus === 'printing'}
+              className="w-full bg-stone-700 hover:bg-stone-800 disabled:bg-gray-400 text-white font-semibold py-3 rounded-xl transition-colors"
+            >
+              {printerStatus === 'connecting' ? 'Conectando...' :
+               printerStatus === 'ready' ? '🔄 Reconectar Impresora' :
+               '🖨️ Conectar Impresora'}
+            </button>
 
-          {dispositivosBT.length > 0 && (
-            <div className="mt-3 space-y-2">
-              {dispositivosBT.map((d) => (
-                <div key={d.id} className="flex items-center gap-2 p-2 bg-green-50 rounded-lg">
-                  <span className="font-medium text-green-800">{d.name}</span>
-                  <span className="text-green-600 text-sm ml-auto">Conectado</span>
-                </div>
-              ))}
-            </div>
-          )}
+            {printerStatus === 'ready' && (
+              <button
+                onClick={handleTestPrint}
+                className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-xl transition-colors"
+              >
+                🧪 Imprimir Test
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Horarios */}

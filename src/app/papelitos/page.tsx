@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { PapelitoTarea, Usuario } from '@/lib/types';
+import { getMXW01Printer } from '@/lib/mxw01-printer';
 import BackToMenu from '@/components/BackToMenu';
 
 export default function PapelitosPage() {
@@ -45,45 +46,27 @@ export default function PapelitosPage() {
   };
 
   const handleReimprimir = async (papelito: PapelitoTarea) => {
-    setImprimiendo(papelito.id);
-    // Generar vista de impresión
-    const printWindow = window.open('', '_blank', 'width=400,height=600');
-    if (printWindow) {
-      printWindow.document.write(`
-        <html>
-        <head><title>Papelito - ${papelito.nombre}</title>
-        <style>
-          body { font-family: Arial, sans-serif; padding: 20px; text-align: center; max-width: 80mm; margin: 0 auto; }
-          h2 { font-size: 18px; margin-bottom: 10px; }
-          p { font-size: 14px; margin: 5px 0; }
-          .qr { margin: 15px auto; }
-          .puntos { font-size: 16px; font-weight: bold; margin: 10px 0; }
-          .linea { border-top: 1px dashed #000; margin: 10px 0; }
-        </style>
-        </head>
-        <body>
-          <h2>📝 ${papelito.nombre}</h2>
-          <p>${papelito.definicion || ''}</p>
-          <div class="linea"></div>
-          <p>👤 ${papelito.usuarios?.nombre || 'Sin asignar'}</p>
-          <p>📅 ${papelito.fecha_impresion}</p>
-          <div class="puntos">✅ +${papelito.puntos_ok} pts | ❌ ${papelito.puntos_ko} pts</div>
-          <div class="linea"></div>
-          <div class="qr">
-            <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(papelito.id)}" alt="QR" />
-          </div>
-          <p style="font-size:10px; color:#666;">Código: ${papelito.id.substring(0, 8)}</p>
-        </body>
-        </html>
-      `);
-      printWindow.document.close();
-      setTimeout(() => {
-        printWindow.print();
-        setImprimiendo(null);
-      }, 500);
-    } else {
-      setImprimiendo(null);
+    const printer = getMXW01Printer();
+    if (printer.status !== 'ready') {
+      alert('Conecta la impresora primero desde Configuración');
+      return;
     }
+
+    setImprimiendo(papelito.id);
+    try {
+      await printer.printPapelito({
+        nombre: papelito.nombre,
+        definicion: papelito.definicion,
+        usuario: papelito.usuarios?.nombre,
+        fecha: papelito.fecha_impresion,
+        puntos_ok: papelito.puntos_ok,
+        puntos_ko: papelito.puntos_ko,
+        codigo: papelito.id,
+      });
+    } catch (err) {
+      alert('Error al imprimir: ' + (err instanceof Error ? err.message : 'Error'));
+    }
+    setImprimiendo(null);
   };
 
   const papelitosFiltrados = papelitos.filter((p) => {
