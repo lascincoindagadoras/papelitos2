@@ -7,6 +7,8 @@ interface Props {
 
 const tarjetas: ReactNode[] = [
   '¡Bienvenido! Soy CUCLA y te voy a enseñar a usar la aplicación.',
+  'Esta aplicación está pensada para que sólo los padres interactuéis con la pantalla. Las tareas y recompensas se imprimirán a través de una impresora térmica conectada por bluetooth.',
+  'La cuenta que has creado debe ser compartida por ambos padres.',
   'Lo primero es crear los usuarios que forman tu familia, en la pantalla "Gestionar usuarios".',
   'Cuando hayas creado los usuarios, crea las tareas que debe hacer cada uno, en la pantalla "Gestionar tareas".',
   'Después crea las recompensas en la pantalla "Gestionar recompensas". Pueden ser individuales o para todos.',
@@ -17,6 +19,7 @@ const tarjetas: ReactNode[] = [
   'Cuando los puntos para una recompensa se alcanzan, la aplicación imprimirá un papelito con la recompensa.',
   'Para enlazar con la impresora térmica pincha en "Configuración". También puedes ajustar ahí las horas de impresión.',
   <>Aquí tienes un enlace para acceder a un video donde te explica como hacer una cajita con papel reciclado para guardar los papelitos y recompensas impresas: <a href="https://youtu.be/MeUMckQwe-c" target="_blank" rel="noopener noreferrer" className="text-amber-600 underline">ver vídeo</a></>,
+  <>Si pinchas aquí podrás comprar una impresora térmica: <a href="https://www.temu.com/es/una-mini-impresora-termica-portatil-y--disenada-sin-tinta-y-sin--a--de-usb-adecuada-para-imprimir-fotos-y-etiquetas--para-viajeros-y-uso--g-601102108503422.html" target="_blank" rel="noopener noreferrer" className="text-amber-600 underline">comprar impresora</a></>,
   'Si en algún momento tienes alguna duda puedes pinchar en el logo y te volverá a salir toda esta información.',
 ];
 
