@@ -66,6 +66,11 @@ export interface MXW01Printer {
     puntos_ko: number;
     codigo: string;
   }): Promise<void>;
+  printRecompensa(recompensa: {
+    nombre: string;
+    definicion?: string | null;
+    usuario?: string;
+  }): Promise<void>;
   testPrint(): Promise<void>;
   onStatusChange?: (status: PrinterStatus) => void;
 }
@@ -413,6 +418,43 @@ export function createMXW01Printer(): MXW01Printer {
         // Footer
         parts.push(textToBitmap([`Código: ${papelito.codigo.substring(0, 8)}`], 14));
         parts.push(blankBitmap(30)); // Paper feed at bottom
+
+        const { data, height } = mergeBitmaps(parts);
+        await sendPrintJob(data, height);
+        setStatus('ready');
+      } catch (err) {
+        setStatus('error');
+        throw err;
+      }
+    },
+
+    async printRecompensa(recompensa) {
+      setStatus('printing');
+      try {
+        const parts: Array<{ data: Uint8Array; height: number }> = [];
+
+        parts.push(textToBitmap(['* * * * * * * * *'], 28));
+        parts.push(textToBitmap(['RECOMPENSA', 'CONSEGUIDA!'], 32));
+        parts.push(separatorBitmap());
+
+        parts.push(textToBitmap([recompensa.nombre], 28));
+        if (recompensa.definicion) {
+          parts.push(textToBitmap([recompensa.definicion], 20));
+        }
+        parts.push(separatorBitmap());
+
+        if (recompensa.usuario) {
+          parts.push(textToBitmap([recompensa.usuario], 22));
+        } else {
+          parts.push(textToBitmap(['Para toda la familia!'], 22));
+        }
+
+        const fecha = new Date().toLocaleDateString('es-ES', { timeZone: 'Europe/Madrid' });
+        parts.push(textToBitmap([fecha], 22));
+
+        parts.push(separatorBitmap());
+        parts.push(textToBitmap(['Enhorabuena!', 'Sigue asi!'], 24));
+        parts.push(blankBitmap(30));
 
         const { data, height } = mergeBitmaps(parts);
         await sendPrintJob(data, height);

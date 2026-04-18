@@ -16,7 +16,7 @@ export async function verificarRecompensas(
   // 1. Obtener todos los papelitos de recompensa no conseguidos
   const { data: recompensasPendientes, error: errorRecompensas } = await supabase
     .from('papelito_recompensas')
-    .select('*, definicion_recompensas:definicion_recompensa_id(*)')
+    .select('*, definicion_recompensas:definicion_recompensa_id(*), usuarios:usuario_id(*)')
     .eq('casa_id', casaId)
     .eq('conseguido', false);
 

@@ -3,6 +3,7 @@ import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { verificarRecompensas } from '@/lib/verificar-recompensas';
+import { getMXW01Printer } from '@/lib/mxw01-printer';
 import { PapelitoRecompensa } from '@/lib/types';
 
 export default function EscanearPage() {
@@ -117,6 +118,20 @@ export default function EscanearPage() {
         const r = resultado.recompensasConseguidas[0];
         setRecompensaConseguida(r);
         setMensajeTipo('reward');
+
+        // Imprimir recompensa automáticamente si la impresora está conectada
+        const printer = getMXW01Printer();
+        if (printer.status === 'ready') {
+          try {
+            await printer.printRecompensa({
+              nombre: r.nombre,
+              definicion: r.definicion,
+              usuario: r.usuarios?.nombre,
+            });
+          } catch {
+            // No bloquear el flujo si falla la impresión
+          }
+        }
       }
     }
 
